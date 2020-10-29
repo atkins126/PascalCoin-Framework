@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2020/07/10 14:25:06.000.801,=C:\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 15:18:00.000.552,=C:\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 15:22:50.000.625,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Main.fmx=C:\Projects\Unit1.fmx</Transaction>
+    <Transaction>2020/08/24 15:22:50.000.625,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Main.pas=C:\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 15:23:00.000.606,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.dproj=C:\Projects\Project1.dproj</Transaction>
+    <Transaction>2020/08/24 16:26:09.000.010,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.HTTPClient.Delphi.pas</Transaction>
+    <Transaction>2020/08/24 16:26:09.000.217,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Interfaces.pas</Transaction>
+    <Transaction>2020/08/24 16:30:14.000.751,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 16:32:50.000.531,C:\PascalCoin\Urban Cohort\Framework\Dev App\Foundation.Interfaces.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 16:35:14.000.831,C:\PascalCoin\Urban Cohort\Framework\Dev App\Foundation.Interfaces.pas=</Transaction>
+    <Transaction>2020/08/24 16:36:03.000.678,=C:\PascalCoin\Urban Cohort\Framework\Foundation\Foundation.Interfaces.pas</Transaction>
+    <Transaction>2020/08/24 16:36:16.000.520,C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.Foundation.Interfaces.pas=C:\PascalCoin\Urban Cohort\Framework\Foundation\Foundation.Interfaces.pas</Transaction>
+    <Transaction>2020/08/24 16:36:31.000.005,C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.HTTPClient.Delphi.pas=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.HTTPClient.Delphi.pas</Transaction>
+    <Transaction>2020/08/24 16:36:44.000.898,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 16:36:58.000.677,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Initialise.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 17:21:08.000.696,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 17:21:20.000.240,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Shared.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 17:24:56.000.127,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 17:25:25.000.822,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Config.Impl.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Shared.pas</Transaction>
+    <Transaction>2020/08/24 17:25:36.000.181,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Shared.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/08/24 17:44:22.000.692,C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.Base.Interfaces.pas=C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.Foundation.Interfaces.pas</Transaction>
+    <Transaction>2020/10/22 17:55:00.000.523,C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.Net.Interfaces.pas=C:\PascalCoin\Urban Cohort\Framework\Foundation\UC.Base.Interfaces.pas</Transaction>
+    <Transaction>2020/10/22 18:01:31.000.206,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Client.pas</Transaction>
+    <Transaction>2020/10/23 00:00:12.000.599,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.API.pas</Transaction>
+    <Transaction>2020/10/23 10:17:43.000.282,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Node.pas</Transaction>
+    <Transaction>2020/10/23 10:29:52.000.845,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Account.pas</Transaction>
+    <Transaction>2020/10/23 10:31:25.000.345,=C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Operation.pas</Transaction>
+    <Transaction>2020/10/23 12:10:31.000.747,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/23 12:10:56.000.891,C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.Utils.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/23 14:12:44.000.416,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/23 14:16:30.000.414,C:\PascalCoin\Urban Cohort\Framework\Foundation\PascalCoin.RPC.Consts.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 12:07:47.724,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 12:08:17.153,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Base.DetailForm.fmx=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.fmx</Transaction>
+    <Transaction>2020/10/27 12:08:17.153,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Base.DetailForm.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 13:57:07.981,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 13:57:37.114,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.NodeStatus.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 13:57:37.116,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.NodeStatus.fmx=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.fmx</Transaction>
+    <Transaction>2020/10/27 16:25:15.857,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 16:25:54.741,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.AccountInfo.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 16:25:54.742,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.AccountInfo.fmx=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.fmx</Transaction>
+    <Transaction>2020/10/27 16:35:31.765,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/27 16:35:48.234,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Utils.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/28 11:23:45.399,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/28 11:24:42.656,C:\PascalCoin\Urban Cohort\Framework\FMXUtils\FMX.PlatformUtils.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/28 18:24:37.585,=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/28 18:25:47.690,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.BlockInfo.pas=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.pas</Transaction>
+    <Transaction>2020/10/28 18:25:47.691,C:\PascalCoin\Urban Cohort\Framework\Dev App\DevApp.Form.BlockInfo.fmx=C:\PascalCoin\Urban Cohort\Framework\Dev App\Unit1.fmx</Transaction>
+  </Transactions>
+	<ActiveMobileDevice>
+		<PMacBookPro iOSSimulator="iPhone5"/>
+	</ActiveMobileDevice>
+</BorlandProject>

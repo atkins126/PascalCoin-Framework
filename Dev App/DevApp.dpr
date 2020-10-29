@@ -1,0 +1,39 @@
+program DevApp;
+
+uses
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
+  System.StartUpCopy,
+  FMX.Forms,
+  DevApp.Main in 'DevApp.Main.pas' {MainForm},
+  UC.HTTPClient.Delphi in '..\Foundation\UC.HTTPClient.Delphi.pas',
+  PascalCoin.RPC.Interfaces in '..\Foundation\PascalCoin.RPC.Interfaces.pas',
+  UC.Net.Interfaces in '..\Foundation\UC.Net.Interfaces.pas',
+  DevApp.Initialise in 'DevApp.Initialise.pas',
+  DevApp.Config.Impl in 'DevApp.Config.Impl.pas',
+  DevApp.Shared in 'DevApp.Shared.pas',
+  PascalCoin.RPC.Client in '..\Foundation\PascalCoin.RPC.Client.pas',
+  PascalCoin.RPC.API in '..\Foundation\PascalCoin.RPC.API.pas',
+  PascalCoin.RPC.Node in '..\Foundation\PascalCoin.RPC.Node.pas',
+  PascalCoin.RPC.Account in '..\Foundation\PascalCoin.RPC.Account.pas',
+  PascalCoin.RPC.Operation in '..\Foundation\PascalCoin.RPC.Operation.pas',
+  PascalCoin.Utils in '..\Foundation\PascalCoin.Utils.pas',
+  PascalCoin.RPC.Consts in '..\Foundation\PascalCoin.RPC.Consts.pas',
+  DevApp.Base.DetailForm in 'DevApp.Base.DetailForm.pas' {DevBaseForm},
+  DevApp.Form.NodeStatus in 'DevApp.Form.NodeStatus.pas' {NodeStatusForm},
+  DevApp.Form.AccountInfo in 'DevApp.Form.AccountInfo.pas' {AccountInfoForm},
+  DevApp.Utils in 'DevApp.Utils.pas',
+  FMX.PlatformUtils in '..\FMXUtils\FMX.PlatformUtils.pas',
+  DevApp.Form.BlockInfo in 'DevApp.Form.BlockInfo.pas' {BlockInfoForm};
+
+{$R *.res}
+
+begin
+  InitialiseApp(Config);
+  Application.Initialize;
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.

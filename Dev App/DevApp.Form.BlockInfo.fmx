@@ -1,0 +1,9 @@
+inherited BlockInfoForm: TBlockInfoForm
+  Caption = 'DevBaseForm1'
+  DesignerMasterStyle = 0
+  inherited HeaderLayout: TLayout
+    inherited FormCaption: TLabel
+      Text = 'Block Stuff'
+    end
+  end
+end
