@@ -141,6 +141,12 @@ object MainForm: TMainForm
         Text = 'Account Info'
         OnClick = AccountInfoBtnClick
       end
+      object BlockButton: TButton
+        Position.X = 164.000000000000000000
+        TabOrder = 2
+        Text = 'Block Info'
+        OnClick = BlockButtonClick
+      end
     end
   end
   object FormStand1: TFormStand
