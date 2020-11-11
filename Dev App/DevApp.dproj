@@ -312,7 +312,7 @@
         <DCCReference Include="DevApp.Config.Impl.pas"/>
         <DCCReference Include="DevApp.Shared.pas"/>
         <DCCReference Include="..\Foundation\PascalCoin.RPC.Client.pas"/>
-        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.Explorer.pas"/>
         <DCCReference Include="..\Foundation\PascalCoin.RPC.Node.pas"/>
         <DCCReference Include="..\Foundation\PascalCoin.RPC.Account.pas"/>
         <DCCReference Include="..\Foundation\PascalCoin.RPC.Operation.pas"/>
@@ -334,6 +334,16 @@
         <DCCReference Include="..\FMXUtils\FMX.PlatformUtils.pas"/>
         <DCCReference Include="DevApp.Form.BlockInfo.pas">
             <Form>BlockInfoForm</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.Block.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.Base.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.Node.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.Wallet.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.API.Operations.pas"/>
+        <DCCReference Include="..\Foundation\PascalCoin.RPC.Exceptions.pas"/>
+        <DCCReference Include="DevApp.Form.PendingInfo.pas">
+            <Form>PendingInfo</Form>
             <FormType>fmx</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

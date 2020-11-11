@@ -14,8 +14,8 @@ Type
     Class Function AccountNumberWithCheckSum(Const Value: Cardinal): String; Static;
     Class Function ValidAccountNumber(Const Value: String): Boolean; Static;
     Class Function AccountNumber(Const Value: String): Cardinal; Static;
-    Class Function SplitAccount(Const Value: String; Out AccountNumber: Cardinal; Out CheckSum: Integer)
-      : Boolean; Static;
+    class procedure SplitAccount(Const Value: String; Out AccountNumber: Cardinal;
+        Out CheckSum: Integer); static;
     Class Function ValidateAccountName(Const Value: String): Boolean; Static;
 
     Class Function BlocksToRecovery(Const LatestBlock, LastActiveBlock: Integer): Integer; static;
@@ -92,8 +92,8 @@ begin
 //     Result := TKeyStyle.ksUnkown
 end;
 
-Class Function TPascalCoinUtils.SplitAccount(Const Value: String; Out AccountNumber: Cardinal;
-  Out CheckSum: Integer): Boolean;
+Class Procedure TPascalCoinUtils.SplitAccount(Const Value: String; Out AccountNumber: Cardinal;
+  Out CheckSum: Integer);
 Var
   lVal: TArray<String>;
 Begin
@@ -117,7 +117,7 @@ End;
 
 Class Function TPascalCoinUtils.UnixToLocalDate(Const Value: Integer): TDateTime;
 Begin
-  TTimeZone.Local.ToLocalTime(UnixToDateTime(Value));
+  Result := TTimeZone.Local.ToLocalTime(UnixToDateTime(Value));
 End;
 
 Class Function TPascalCoinUtils.ValidAccountNumber(Const Value: String): Boolean;

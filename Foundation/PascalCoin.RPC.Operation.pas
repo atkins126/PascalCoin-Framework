@@ -49,7 +49,6 @@ Type
     FN_Operation: Integer;
     FNew_enc_pubkey: HexaStr;
     FNew_Type: String;
-    FAmount: Currency;
     FSeller_account: Cardinal;
     FAccount_price: Currency;
     FLocked_until_block: UInt64;
@@ -79,7 +78,9 @@ TPascalCoinOperation = Class(TInterfacedObject, IPascalCoinOperation)
     FOpTxt: String;
     FAccount: Cardinal;
     FAmount: Currency;
+    FAmount_s: String;
     FFee: Currency;
+    FFee_s: String;
     FBalance: Currency;
     FSender_Account: Cardinal;
     FDest_Account: Cardinal;
@@ -105,7 +106,9 @@ TPascalCoinOperation = Class(TInterfacedObject, IPascalCoinOperation)
     Function GetOptxt: String;
     Function GetAccount: Cardinal;
     Function GetAmount: Currency;
+    Function GetAmount_s: String;
     Function GetFee: Currency;
+    Function GetFee_s: String;
     Function GetBalance: Currency;
     Function GetSender_account: Cardinal;
     Function GetDest_account: Cardinal;
@@ -136,7 +139,7 @@ TPascalCoinOperation = Class(TInterfacedObject, IPascalCoinOperation)
       Function GetOperation(const index: integer): IPascalCoinOperation;
       Function Count: Integer;
   public
-  class function FromJsonValue(AJSONValue: TJSONValue): TPascalCoinOperations;
+  class function FromJsonValue(AOps: TJSONArray): TPascalCoinOperations;
   end;
 
 
@@ -157,7 +160,9 @@ Var
   lObj: TJSONObject;
   lArr: TJSONArray;
   I: Integer;
+  CD: Cardinal;
   S: String;
+  C: Currency;
 Begin
   lObj := Value As TJSONObject;
   result := TPascalCoinOperation.Create;
@@ -182,13 +187,17 @@ Begin
   result.FOpTxt := lObj.Values['optxt'].AsType<String>;
   // "Tx-In 16.0000 PASC from 865851-95 to 865822-14",
   result.FFee := lObj.Values['fee'].AsType<Currency>; // 0.0000,
+  result.FFee_s := lObj.Values['fee_s'].AsType<String>;
   result.FAmount := lObj.Values['amount'].AsType<Currency>; // 16.0000,
+  result.FAmount_s := lObj.Values['amount_s'].AsType<String>;
   result.FPayload := lObj.Values['payload'].AsType<HexaStr>;
   // "7A6962626564656520646F6F646168",
-  result.FBalance := lObj.Values['balance'].AsType<Currency>; // 19.1528,
-  result.FSender_Account := lObj.Values['sender_account'].AsType<Cardinal>;
-  // 865851,
-  result.FDest_Account := lObj.Values['dest_account'].AsType<Cardinal>;
+  if lObj.TryGetValue<Currency>('balance', C) then
+     result.FBalance := C; // 19.1528,
+  if lObj.TryGetValue<Cardinal>('sender_account', CD) then
+     result.FSender_Account := CD;
+  if lObj.TryGetValue<Cardinal>('dest_account', CD) then
+     result.FDest_Account := CD;
   // 865822,
   result.FOpHash := lObj.Values['ophash'].AsType<HexaStr>;
 
@@ -225,6 +234,11 @@ Begin
   result := FAmount;
 End;
 
+function TPascalCoinOperation.GetAmount_s: String;
+begin
+  Result := FAmount_s;
+end;
+
 Function TPascalCoinOperation.GetBalance: Currency;
 Begin
   result := FBalance;
@@ -259,6 +273,11 @@ Function TPascalCoinOperation.GetFee: Currency;
 Begin
   result := FFee;
 End;
+
+function TPascalCoinOperation.GetFee_s: String;
+begin
+ Result := FFee_s;
+end;
 
 Function TPascalCoinOperation.GetMaturation: Integer;
 Begin
@@ -458,20 +477,17 @@ begin
   Result := Length(FOperations);
 end;
 
-class function TPascalCoinOperations.FromJsonValue(AJSONValue: TJSONValue): TPascalCoinOperations;
+class function TPascalCoinOperations.FromJsonValue(AOps: TJSONArray): TPascalCoinOperations;
 var
   I: Integer;
-  lOps: TJSONArray;
 begin
   Result := TPascalCoinOperations.Create;
-  lOps := AJSONValue as TJSONArray;
 
-  SetLength(Result.FOperations, lOps.Count);
-  for I := 0 to lOps.Count - 1 do
+  SetLength(Result.FOperations, AOps.Count);
+  for I := 0 to AOps.Count - 1 do
     begin
-      Result.FOperations[I] := TPascalCoinOperation.FromJSONValue(lOps[I]);
+      Result.FOperations[I] := TPascalCoinOperation.FromJSONValue(AOps[I]);
     end;
-
 end;
 
 function TPascalCoinOperations.GetOperation(const index: integer): IPascalCoinOperation;

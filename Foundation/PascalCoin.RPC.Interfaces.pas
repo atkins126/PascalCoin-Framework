@@ -26,7 +26,8 @@ Uses
   System.Generics.Collections,
   System.JSON,
   System.SysUtils,
-  System.Rtti;
+  System.Rtti,
+  PascalCoin.RPC.Exceptions;
 
 Type
   // HEXASTRING: String that contains an hexadecimal value (ex. "4423A39C"). An hexadecimal string is always an even character length.
@@ -37,30 +38,29 @@ Type
 
   // PASC64Encode = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-+{}[]_:`|<>,.?/~';
   // PASC64EncodeInit = 'abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+{}[]_:`|<>,.?/~';
+  // See PascalCoin.RPC.Consts.pas
 
   TStringPair = TPair<String, String>;
   TParamPair = TPair<String, variant>;
-
-  ERPCException = Class(Exception);
 
   IPascalCoinNodeStatus = Interface;
 
   IPascalCoinRPCClient = Interface
     ['{A04B65F9-345E-44F7-B834-88CCFFFAC4B6}']
-    Function GetResult: TJSONObject;
-    Function GetResultStr: String;
+    Function GetResponseObject: TJSONObject;
+    Function GetResponseStr: String;
     Function GetNodeURI: String;
     Procedure SetNodeURI(Const Value: String);
 
     Function RPCCall(Const AMethod: String; Const AParams: Array Of TParamPair): boolean;
-    Property Result: TJSONObject Read GetResult;
-    Property ResultStr: String Read GetResultStr;
+    Property ResponseObject: TJSONObject Read GetResponseObject;
+    Property ResponseStr: String Read GetResponseStr;
     Property NodeURI: String Read GetNodeURI Write SetNodeURI;
   End;
 
   TKeyStyle = (ksUnkown, ksEncKey, ksB58Key);
 
-  TAccountData = Array[0..31] of Byte;
+  TAccountData = String; //Array [0 .. 31] Of Byte;
 
   IPascalCoinAccount = Interface
     ['{10B1816D-A796-46E6-94DA-A4C6C2125F82}']
@@ -269,6 +269,7 @@ Type
     Function GetBlock: integer;
     Function GetEnc_PubKey: String;
     Function GetFee: Currency;
+    Function GetFee_s: String;
     Function GetHashRateKHS: integer;
     Function GetMaturation: integer;
     Function GetNonce: integer;
@@ -277,58 +278,56 @@ Type
     Function GetPayload: String;
     Function GetPOW: String;
     Function GetReward: Currency;
+    Function GetReward_s: String;
     Function GetSBH: String;
     Function GetTarget: integer;
     Function GetTimeStamp: integer;
     Function GetVer: integer;
     Function GetVer_A: integer;
-    Procedure SetBlock(Const Value: integer);
-    Procedure SetEnc_PubKey(Const Value: String);
-    Procedure SetFee(Const Value: Currency);
-    Procedure SetHashRateKHS(Const Value: integer);
-    Procedure SetMaturation(Const Value: integer);
-    Procedure SetNonce(Const Value: integer);
-    Procedure SetOperations(Const Value: integer);
-    Procedure SetOPH(Const Value: String);
-    Procedure SetPayload(Const Value: String);
-    Procedure SetPOW(Const Value: String);
-    Procedure SetReward(Const Value: Currency);
-    Procedure SetSBH(Const Value: String);
-    Procedure SetTarget(Const Value: integer);
-    Procedure SetTimeStamp(Const Value: integer);
-    Procedure SetVer(Const Value: integer);
-    Procedure SetVer_A(Const Value: integer);
 
-    Function GetDelphiTimeStamp: TDateTime;
-    Procedure SetDelphiTimeStamp(Const Value: TDateTime);
+    Function GetTimeStampAsDateTime: TDateTime;
 
-    Property block: integer Read GetBlock Write SetBlock; // Block number
-    Property enc_pubkey: String Read GetEnc_PubKey Write SetEnc_PubKey;
+    Property block: integer Read GetBlock;
     // Encoded public key value used to init 5 created accounts of this block (See decodepubkey )
-    Property reward: Currency Read GetReward Write SetReward;
+    Property enc_pubkey: String Read GetEnc_PubKey;
     // Reward of first account's block
-    Property fee: Currency Read GetFee Write SetFee;
+    Property reward: Currency Read GetReward;
+    Property reward_s: String Read GetReward_s;
     // Fee obtained by operations
-    Property ver: integer Read GetVer Write SetVer; // Pascal Coin protocol used
-    Property ver_a: integer Read GetVer_A Write SetVer_A;
+    Property fee: Currency Read GetFee;
+    Property fee_s: String Read GetFee_s;
+    Property ver: integer Read GetVer;
     // Pascal Coin protocol available by the miner
-    Property timestamp: integer Read GetTimeStamp Write SetTimeStamp;
+    Property ver_a: integer Read GetVer_A;
     // Unix timestamp
-    Property target: integer Read GetTarget Write SetTarget; // Target used
-    Property nonce: integer Read GetNonce Write SetNonce; // Nonce used
-    Property payload: String Read GetPayload Write SetPayload;
+    Property timestamp: integer Read GetTimeStamp;
+    // target difficulty
+    Property target: integer Read GetTarget;
+    // nonce used
+    Property nonce: integer Read GetNonce;
     // Miner's payload
-    Property sbh: String Read GetSBH Write SetSBH; // SafeBox Hash
-    Property oph: String Read GetOPH Write SetOPH; // Operations hash
-    Property pow: String Read GetPOW Write SetPOW; // Proof of work
-    Property operations: integer Read GetOperations Write SetOperations;
-    // Number of operations included in this block
-    Property hashratekhs: integer Read GetHashRateKHS Write SetHashRateKHS;
-    // Estimated network hashrate calculated by previous 50 blocks average
-    Property maturation: integer Read GetMaturation Write SetMaturation;
-    // Number of blocks in the blockchain higher than this
+    Property payload: String Read GetPayload;
 
-    Property DelphiTimeStamp: TDateTime Read GetDelphiTimeStamp Write SetDelphiTimeStamp;
+    Property sbh: String Read GetSBH;
+    Property oph: String Read GetOPH;
+    Property pow: String Read GetPOW;
+    // Number of operations included in this block
+    Property operations: integer Read GetOperations;
+    // Estimated network hashrate calculated by previous 50 blocks average
+    Property hashratekhs: integer Read GetHashRateKHS;
+    // Number of blocks in the blockchain higher than this
+    Property maturation: integer Read GetMaturation;
+    // helper property
+    Property TimeStampAsDateTime: TDateTime Read GetTimeStampAsDateTime;
+  End;
+
+  IPascalCoinBlocks = Interface
+    ['{9260792F-A849-4DF0-8944-9E500BFCA951}']
+    Function GetBlock(Const Index: integer): IPascalCoinBlock;
+    Function GetBlockNumber(Const Index: integer): IPascalCoinBlock;
+    Function Count: integer;
+    Property block[Const Index: integer]: IPascalCoinBlock Read GetBlock; Default;
+    Property BlockNumber[Const Index: integer]: IPascalCoinBlock Read GetBlockNumber;
   End;
 
   /// <summary>
@@ -387,7 +386,7 @@ Type
     Function GetAmount: Currency;
     Function GetAmount_s: String;
     Function GetPayload: HexaStr;
-    Function GetPayloadType: Integer;
+    Function GetPayloadType: integer;
 
     /// <summary>
     /// Sending account (PASA)
@@ -400,7 +399,7 @@ Type
     Property amount: Currency Read GetAmount;
     Property amount_s: String Read GetAmount_s;
     Property payload: HexaStr Read GetPayload;
-    Property payloadtype: Integer Read GetPayloadType;
+    Property payloadtype: integer Read GetPayloadType;
   End;
 
   IPascalCoinReceiver = Interface
@@ -409,7 +408,7 @@ Type
     Function GetAmount: Currency;
     Function GetAmount_s: String;
     Function GetPayload: HexaStr;
-    Function GetPayloadType: Integer;
+    Function GetPayloadType: integer;
 
     /// <summary>
     /// Receiving account (PASA)
@@ -421,7 +420,7 @@ Type
     Property amount: Currency Read GetAmount;
     Property amount_s: String Read GetAmount_s;
     Property payload: HexaStr Read GetPayload;
-    Property payloadtype: Integer Read GetPayloadType;
+    Property payloadtype: integer Read GetPayloadType;
   End;
 
   IPascalCoinChanger = Interface
@@ -467,12 +466,12 @@ Type
     Property fee: Currency Read GetFee;
   End;
 
-  TOpTransactionStyle = (transaction_transaction, transaction_with_auto_buy_account, buy_account, transaction_with_auto_atomic_swap);
-    // transaction = Sinlge standard transaction
-    // transaction_with_auto_buy_account = Single transaction made over an account listed for private sale. For STORING purposes only
-    // buy_account = A Buy account operation
-    // transaction_with_auto_atomic_swap = Single transaction made over an account listed for atomic swap (coin swap or account swap)
-
+  TOpTransactionStyle = (transaction_transaction, transaction_with_auto_buy_account, buy_account,
+    transaction_with_auto_atomic_swap);
+  // transaction = Sinlge standard transaction
+  // transaction_with_auto_buy_account = Single transaction made over an account listed for private sale. For STORING purposes only
+  // buy_account = A Buy account operation
+  // transaction_with_auto_atomic_swap = Single transaction made over an account listed for atomic swap (coin swap or account swap)
 
   IPascalCoinOperation = Interface
     ['{0C059E68-CE57-4F06-9411-AAD2382246DE}']
@@ -487,7 +486,9 @@ Type
     Function GetOptxt: String;
     Function GetAccount: Cardinal;
     Function GetAmount: Currency;
+    Function GetAmount_s: String;
     Function GetFee: Currency;
+    Function GetFee_s: String;
     Function GetBalance: Currency;
     Function GetSender_account: Cardinal;
     Function GetDest_account: Cardinal;
@@ -499,14 +500,13 @@ Type
     Function GetN_Operation: integer;
     Function GetPayload: HexaStr;
 
-    Function GetSender(const index: integer): IPascalCoinSender;
-    Function GetReceiver(const index: integer): IPascalCoinReceiver;
-    Function GetChanger(const index: integer): IPascalCoinChanger;
+    Function GetSender(Const Index: integer): IPascalCoinSender;
+    Function GetReceiver(Const Index: integer): IPascalCoinReceiver;
+    Function GetChanger(Const Index: integer): IPascalCoinChanger;
 
-    Function SendersCount: Integer;
-    Function ReceiversCount: Integer;
-    Function ChangersCount: Integer;
-
+    Function SendersCount: integer;
+    Function ReceiversCount: integer;
+    Function ChangersCount: integer;
 
     /// <summary>
     /// (optional) - If operation is invalid, value=false
@@ -556,10 +556,12 @@ Type
     /// apply when optype=1)
     /// </summary>
     Property amount: Currency Read GetAmount;
+    Property amount_s: String read GetAmount_s;
     /// <summary>
     /// Fee of this operation
     /// </summary>
     Property fee: Currency Read GetFee;
+    Property fee_s: String read GetFee_s;
     /// <summary>
     /// Balance of account after this block is introduced in the Blockchain.
     /// Note: balance is a calculation based on current safebox account balance
@@ -609,38 +611,38 @@ Type
     Property n_operation: integer Read GetN_Operation;
     Property payload: HexaStr Read GetPayload;
 
-    ///<summary>
-    ///Will return both change key and the private sale public key value <b>DEPRECATED</b>, use changers array instead
-    ///  </summary>
-    Property enc_pubkey: HexaStr Read Getenc_pubkey;
+    /// <summary>
+    /// Will return both change key and the private sale public key value <b>DEPRECATED</b>, use changers array instead
+    /// </summary>
+    Property enc_pubkey: HexaStr Read GetEnc_PubKey;
 
     /// <summary>
     /// ARRAY of objects with senders, for example in a transaction (optype = 1)
     /// or multioperation senders (optype = 9)
     /// </summary>
-    Property sender[const index: integer]: IPascalCoinSender Read GetSender;
+    Property sender[Const Index: integer]: IPascalCoinSender Read GetSender;
     /// <summary>
     /// ARRAY of objects - When this is a transaction or multioperation, this array
     /// contains each receiver
     /// </summary>
-    Property receiver[const index: integer]: IPascalCoinReceiver Read GetReceiver;
+    Property receiver[Const Index: integer]: IPascalCoinReceiver Read GetReceiver;
     /// <summary>
     /// ARRAY of objects - When accounts changed state
     /// </summary>
-    Property changers[const index: integer]: IPascalCoinChanger Read GetChanger;
+    Property changers[Const Index: integer]: IPascalCoinChanger Read GetChanger;
 
   End;
 
-  IPascalCoinOperations = interface
-  ['{027ACE68-2D60-4E45-A67F-6DB53CE6191E}']
-    Function GetOperation(const index: integer): IPascalCoinOperation;
+  IPascalCoinOperations = Interface
+    ['{027ACE68-2D60-4E45-A67F-6DB53CE6191E}']
+    Function GetOperation(Const Index: integer): IPascalCoinOperation;
 
-    Function Count: Integer;
-    property Operation[const index: integer]: IPascalCoinOperation read GetOperation;
-  end;
+    Function Count: integer;
+    Property Operation[Const Index: integer]: IPascalCoinOperation Read GetOperation; Default;
+  End;
 
-  IPascalCoinAPI = Interface
-    ['{310A40ED-F917-4075-B495-5E4906C4D8EB}']
+  IPascalCoinBaseAPI = Interface
+    ['{2EB22047-B7CE-4B6E-8B78-EFB4E8F349F4}']
     Function GetNodeURI: String;
     Procedure SetNodeURI(Const Value: String);
 
@@ -649,22 +651,83 @@ Type
     Function GetJSONResult: TJSONValue;
     Function GetJSONResultStr: String;
 
-    Function URI(Const Value: String): IPascalCoinAPI;
+    Property JSONResult: TJSONValue Read GetJSONResult;
+    Property JSONResultStr: String Read GetJSONResultStr;
+    Property NodeURI: String Read GetNodeURI Write SetNodeURI;
+    Property LastError: String Read GetLastError;
 
+  End;
+
+  IPascalCoinNodeAPI = Interface(IPascalCoinBaseAPI)
+    ['{C650A953-E3D7-4ED7-B942-7A6B0B6FC1ED}']
     Function NodeStatus: IPascalCoinNodeStatus;
 
-    Function GetBlockCount: Integer;
+  End;
+
+  IPascalCoinExplorerAPI = Interface(IPascalCoinBaseAPI)
+    ['{310A40ED-F917-4075-B495-5E4906C4D8EB}']
+
+    Function GetBlockCount: integer;
     Function GetBlock(Const BlockNumber: integer): IPascalCoinBlock;
 
-    Function GetAccount(Const AAccountNumber: Cardinal): IPascalCoinAccount;
-    Function getwalletaccounts(Const APublicKey: String; Const AKeyStyle: TKeyStyle; Const AStartIndex: integer = 0;
-      Const AMaxCount: integer = 100): IPascalCoinAccounts;
+    /// <summary>
+    ///   Returns a JSON Array with blocks information from "start" to "end"
+    ///   (or "last" n blocks) Blocks are returned in DESCENDING order See
+    ///   getblock <br />Note: Must use param <b>last</b> alone, or <b>start</b>
+    ///    and end <br />
+    ///  Function GetBlocks(const Alast, Astart, Aend: Integer): IPascalCoinBlocks; <br />
+    ///  Simplifying Methods Implemented
+    /// </summary>
+    /// <param name="Alast">
+    ///   Last n blocks inthe blockchain (n&gt;0 and n&lt;=1000) <br />
+    /// </param>
 
-    //Support Methods
-    Procedure AddWalletAccounts(Const APublicKey: String; Const AKeyStyle: TKeyStyle; AAccountList: IPascalCoinAccounts;
-      Const AStartIndex: integer; Const AMaxCount: integer = 100);
-      Function getwalletaccountscount
-      (Const APublicKey: String; Const AKeyStyle: TKeyStyle): integer;
+    Function GetLastBlocks(const ACount: Integer): IPascalCoinBlocks;
+    Function GetBlockRange(const AStart, AEnd: Integer): IPascalCoinBlocks;
+
+    /// <summary>
+    ///   Params <br />block : Integer - Block number <br />opblock : Integer -
+    ///   Operation <br />
+    /// </summary>
+    /// <param name="block">
+    ///   Block Number
+    /// </param>
+    /// <param name="opblock">
+    ///   Operation Index (0..operations-1) of this block
+    /// </param>
+    Function getblockoperation(const Ablock, Aopblock: Integer): IPascalCoinOperation;
+
+    /// <param name="ABlock">
+    ///   Block Number
+    /// </param>
+    /// <param name="AStart">
+    ///   Start with operation index (default 0)
+    /// </param>
+    /// <param name="Amax">
+    ///   Maximum number of operations to retrieve
+    /// </param>
+    Function getblockoperations(Const ABlock: Integer; const AStart: Integer = 0; const Amax: Integer = 100): IPascalCoinOperations;
+
+    /// <summary>
+    ///   Returns node pending buffer count ( New on Build 3.0 )
+    /// </summary>
+    Function getpendingscount: Integer;
+
+    /// <summary>
+    ///   Get pending operations to be included in the blockchain
+    /// </summary>
+    /// <param name="AStart">
+    ///   Start at index
+    /// </param>
+    /// <param name="AMax">
+    ///   Number to return. Setting this as 0 returns all pending transactions
+    /// </param>
+    Function getpendings(const AStart: Integer = 0; Const AMax: Integer = 100): IPascalCoinOperations;
+    //
+    // findoperation - Find
+
+
+    Function GetAccount(Const AAccountNumber: Cardinal): IPascalCoinAccount;
 
     /// <summary>
     /// Get operations made to an account <br />
@@ -688,7 +751,32 @@ Type
     Function getaccountoperations(Const AAccount: Cardinal; Const ADepth: integer = 100; Const AStart: integer = 0;
       Const AMax: integer = 100): IPascalCoinOperations;
 
-    Function executeoperation(Const RawOperation: String): IPascalCoinOperation;
+  End;
+
+
+  /// <summary>
+  ///   This has been created as an extended explorer to contain explorer
+  ///   methods which require the node to have the AllowUsePrivateKeys set to
+  ///   true and access to the wallet
+  /// </summary>
+  IPascalCoinWalletAPI = Interface(IPascalCoinExplorerAPI)
+    ['{1FE4E934-1B75-4614-8EAA-5F71CA27C237}']
+    Function getwalletaccounts(Const APublicKey: String; Const AKeyStyle: TKeyStyle; Const AStartIndex: integer = 0;
+      Const AMaxCount: integer = 100): IPascalCoinAccounts;
+
+    // Support Methods
+    Procedure AddWalletAccounts(Const APublicKey: String; Const AKeyStyle: TKeyStyle; AAccountList: IPascalCoinAccounts;
+      Const AStartIndex: integer; Const AMaxCount: integer = 100);
+    Function getwalletaccountscount(Const APublicKey: String; Const AKeyStyle: TKeyStyle): integer;
+
+
+    // function getwalletcoins(const APublicKey: String): Currency;
+
+  End;
+
+
+  IPascalCoinOperationsAPI = Interface(IPascalCoinBaseAPI)
+    ['{111BF45E-B203-4E9E-A639-5D837EDFCC3F}']
 
     /// <summary>
     /// Encrypt a text "payload" using "payload_method" <br /><br /><br /><br />
@@ -708,19 +796,8 @@ Type
     Function payloadEncryptWithPublicKey(Const APayload: String; Const AKey: String;
       Const AKeyStyle: TKeyStyle): String;
 
-    // function getwalletcoins(const APublicKey: String): Currency;
-    // getblocks - Get a list of blocks (last n blocks, or from start to end)
-    // getblockcount - Get blockchain high in this node
-    // getblockoperation - Get an operation of the block information
-    // getblockoperations - Get all operations of specified block
-    // getpendings - Get pendings operations to be included in the blockchain
-    // getpendingscount - Returns node pending buffer count ( New on Build 3.0 )
-    // findoperation - Find
+    Function executeoperation(Const RawOperation: String): IPascalCoinOperation;
 
-    Property JSONResult: TJSONValue Read GetJSONResult;
-    Property JSONResultStr: String Read GetJSONResultStr;
-    Property NodeURI: String Read GetNodeURI Write SetNodeURI;
-    Property LastError: String Read GetLastError;
   End;
 
 Implementation

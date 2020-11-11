@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
-  PascalCoin.RPC.Interfaces, FMX.Controls.Presentation, FMX.StdCtrls;
+  PascalCoin.RPC.Interfaces, FMX.Controls.Presentation, FMX.StdCtrls, PascalCoin.RPC.Exceptions;
 
 type
   TDevBaseForm = class(TForm)
@@ -18,9 +18,12 @@ type
     procedure SetDefaultURI(const Value: String);
     { Private declarations }
   protected
-    function GetAPI: IPascalCoinAPI;
+    function NodeAPI: IPascalCoinNodeAPI;
+    function ExplorerAPI: IPascalCoinExplorerAPI;
+    function WalletExplorerAPI: IPascalCoinWalletAPI;
+
     function UseURI: String; virtual;
-    procedure HandleAPIException(eMessage: string);
+    procedure HandleAPIException(E: Exception);
   public
     { Public declarations }
     procedure InitialiseThis; virtual;
@@ -36,7 +39,7 @@ implementation
 
 {$R *.fmx}
 
-uses DevApp.Shared, XSuperObject, FMX.DialogService;
+uses DevApp.Shared, FMX.DialogService;
 
 { TDevBaseForm }
 
@@ -45,20 +48,21 @@ begin
   Result := True;
 end;
 
-function TDevBaseForm.GetAPI: IPascalCoinAPI;
+function TDevBaseForm.ExplorerAPI: IPascalCoinExplorerAPI;
 begin
-  Result := Config.Container.Resolve<IPascalCoinAPI>;
+  Result := Config.Container.Resolve<IPascalCoinExplorerAPI>;
   Result.NodeURI := UseURI;
 end;
 
-procedure TDevBaseForm.HandleAPIException(eMessage: string);
-var S: ISuperObject;
-    M: String;
+function TDevBaseForm.NodeAPI: IPascalCoinNodeAPI;
 begin
-   S := SO(eMessage);
-   M := S.S['StatusMessage'].Replace(':', #10);
+  Result := Config.Container.Resolve<IPascalCoinNodeAPI>;
+  Result.NodeURI := UseURI;
+end;
 
-   TDialogService.ShowMessage(M);
+procedure TDevBaseForm.HandleAPIException(E: Exception);
+begin
+   TDialogService.ShowMessage(E.Message);
 end;
 
 procedure TDevBaseForm.InitialiseThis;
@@ -79,6 +83,12 @@ end;
 function TDevBaseForm.UseURI: String;
 begin
   Result := FDefaultURI;
+end;
+
+function TDevBaseForm.WalletExplorerAPI: IPascalCoinWalletAPI;
+begin
+  Result := Config.Container.Resolve<IPascalCoinWalletAPI>;
+  Result.NodeURI := UseURI;
 end;
 
 end.

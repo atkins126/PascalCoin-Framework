@@ -133,7 +133,7 @@ Begin
   End;
 
   Edit1.Text := AnAccount;
-  lAccount := GetAPI.GetAccount(TPascalCoinUtils.AccountNumber(AnAccount));
+  lAccount := ExplorerAPI.GetAccount(TPascalCoinUtils.AccountNumber(AnAccount));
 
   Memo1.Lines.Clear;
   TDevAppUtils.AccountInfo(lAccount, Memo1.Lines);
@@ -151,8 +151,8 @@ Var
   lAccounts: IPascalCoinAccounts;
   I, lastRow: Integer;
 Begin
-  FLatestBlock := GetAPI.GetBlockCount;
-  lAccounts := GetAPI.getwalletaccounts(PublicKey.Text, TKeyStyle.ksEncKey, FLastAccountIndex);
+  FLatestBlock := ExplorerAPI.GetBlockCount;
+  lAccounts := WalletExplorerAPI.getwalletaccounts(PublicKey.Text, TKeyStyle.ksEncKey, FLastAccountIndex);
 
   FLastAccountIndex := FLastAccountIndex + lAccounts.Count;
   lastRow := AccountList.RowCount - 1;
@@ -174,10 +174,10 @@ Begin
   AccountList.RowCount := 0;
   FLastAccountIndex := -1;
   Try
-    FAccounts := GetAPI.getwalletaccountscount(PublicKey.Text, TKeyStyle.ksEncKey);
+    FAccounts := WalletExplorerAPI.getwalletaccountscount(PublicKey.Text, TKeyStyle.ksEncKey);
   Except
     On e: Exception Do
-      HandleAPIException(e.message);
+      HandleAPIException(e);
   End;
   NumAccounts.Text := FormatFloat('#,##0', FAccounts);
   FetchNextAccounts;
@@ -192,7 +192,7 @@ Begin
      lDepth := DEEP_SEARCH
   else
      lDepth := StrToInt(OpDepth.Text.Trim);
-  GetAPI.getaccountoperations(TPascalCoinUtils.AccountNumber(Edit1.Text), lDepth);
+  ExplorerAPI.getaccountoperations(TPascalCoinUtils.AccountNumber(Edit1.Text), lDepth);
 End;
 
 Procedure TAccountInfoForm.PastePubKeyBtnClick(Sender: TObject);
@@ -227,13 +227,12 @@ End;
 
 Function TAccountInfoForm.SanitiseRecovery(Const DaysToRecovery: Double): String;
 Var
-  DTR, TTL: TDateTime;
+  DTR: TDateTime;
   T: Double;
 Begin
 
   T := Frac(DaysToRecovery);
   DTR := IncDay(Now, Trunc(DaysToRecovery)) + T;
-  TTL := DTR - Now;
   Result := TDevAppUtils.FormatAsTimeToGo(DTR - Now);
 
 End;

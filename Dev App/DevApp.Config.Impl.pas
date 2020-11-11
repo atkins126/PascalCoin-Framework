@@ -28,7 +28,7 @@ end;
 
 implementation
 
-uses System.IOUtils;
+uses System.IOUtils, System.SysUtils;
 
 { TDevAppConfig }
 

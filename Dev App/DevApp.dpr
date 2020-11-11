@@ -16,7 +16,7 @@ uses
   DevApp.Config.Impl in 'DevApp.Config.Impl.pas',
   DevApp.Shared in 'DevApp.Shared.pas',
   PascalCoin.RPC.Client in '..\Foundation\PascalCoin.RPC.Client.pas',
-  PascalCoin.RPC.API in '..\Foundation\PascalCoin.RPC.API.pas',
+  PascalCoin.RPC.API.Explorer in '..\Foundation\PascalCoin.RPC.API.Explorer.pas',
   PascalCoin.RPC.Node in '..\Foundation\PascalCoin.RPC.Node.pas',
   PascalCoin.RPC.Account in '..\Foundation\PascalCoin.RPC.Account.pas',
   PascalCoin.RPC.Operation in '..\Foundation\PascalCoin.RPC.Operation.pas',
@@ -27,7 +27,14 @@ uses
   DevApp.Form.AccountInfo in 'DevApp.Form.AccountInfo.pas' {AccountInfoForm},
   DevApp.Utils in 'DevApp.Utils.pas',
   FMX.PlatformUtils in '..\FMXUtils\FMX.PlatformUtils.pas',
-  DevApp.Form.BlockInfo in 'DevApp.Form.BlockInfo.pas' {BlockInfoForm};
+  DevApp.Form.BlockInfo in 'DevApp.Form.BlockInfo.pas' {BlockInfoForm},
+  PascalCoin.RPC.Block in '..\Foundation\PascalCoin.RPC.Block.pas',
+  PascalCoin.RPC.API.Base in '..\Foundation\PascalCoin.RPC.API.Base.pas',
+  PascalCoin.RPC.API.Node in '..\Foundation\PascalCoin.RPC.API.Node.pas',
+  PascalCoin.RPC.API.Wallet in '..\Foundation\PascalCoin.RPC.API.Wallet.pas',
+  PascalCoin.RPC.API.Operations in '..\Foundation\PascalCoin.RPC.API.Operations.pas',
+  PascalCoin.RPC.Exceptions in '..\Foundation\PascalCoin.RPC.Exceptions.pas',
+  DevApp.Form.PendingInfo in 'DevApp.Form.PendingInfo.pas' {PendingInfo};
 
 {$R *.res}
 

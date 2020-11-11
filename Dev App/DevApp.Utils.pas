@@ -10,12 +10,20 @@ TDevAppUtils = Class
 public
   class procedure AccountInfo(AAccount: IPascalCoinAccount; Strings: TStrings;
       const ExcludePubKey: Boolean = True); static;
-  class function FormatAsTimeToGo(const ADate: TDateTime): string;
+  class procedure BlockInfo(ABlock: IPascalCoinBlock; Strings: TStrings); static;
+  class procedure OperationInfo(AOp: IPascalCoinOperation; Strings: TStrings);
+      static;
+
+
+  class function FormatAsTimeToGo(const ADate: TDateTime): string; static;
 End;
 
 implementation
 
-uses System.DateUtils;
+uses System.DateUtils, System.Rtti;
+
+const
+bool_array: Array[Boolean] of String = ('False', 'True');
 
 { TDevAppUtils }
 
@@ -39,7 +47,30 @@ begin
   Strings.Add('new_enc_pubkey: ' + AAccount.new_enc_pubkey);
   Strings.Add('account_type: ' + AAccount.account_type.ToString);
   Strings.Add('Seal: ' + AAccount.Seal);
-  Strings.Add('Data: ' + TEncoding.Unicode.GetString(AAccount.Data));
+  Strings.Add('Data: ' + AAccount.Data); //TEncoding.Unicode.GetString(AAccount.Data));
+end;
+
+class procedure TDevAppUtils.BlockInfo(ABlock: IPascalCoinBlock; Strings: TStrings);
+begin
+  Strings.AddPair('Block', ABlock.block.ToString);
+  Strings.AddPair('enc_pubkey', ABlock.enc_pubkey);
+  Strings.AddPair('reward', CurrToStr(ABlock.reward));
+  Strings.AddPair('reward_s', ABlock.reward_s);
+  Strings.AddPair('fee', CurrToStr(ABlock.fee));
+  Strings.AddPair('fee_s', ABlock.fee_s);
+  Strings.AddPair('ver', ABlock.ver.ToString);
+  Strings.AddPair('ver_a', ABlock.ver_a.ToString);
+  Strings.AddPair('timestamp', ABlock.timestamp.ToString + ' (' +
+      FormatDateTime('dd/mm/yyyy hh:nn:ss:zz', ABlock.TimeStampAsDateTime) + ')');
+  Strings.AddPair('target', ABlock.target.ToString);
+  Strings.AddPair('nonce', ABlock.nonce.ToString);
+  Strings.AddPair('payload', ABlock.payload);
+  Strings.AddPair('sbh', ABlock.sbh);
+  Strings.AddPair('oph', ABlock.oph);
+  Strings.AddPair('pow', ABlock.pow);
+  Strings.AddPair('operations', ABlock.operations.ToString);
+  Strings.AddPair('maturation', ABlock.maturation.ToString);
+  Strings.AddPair('hashratekhs', ABlock.hashratekhs.ToString);
 end;
 
 class function TDevAppUtils.FormatAsTimeToGo(const ADate: TDateTime): string;
@@ -96,5 +127,86 @@ begin
 
 end;
 
+
+class procedure TDevAppUtils.OperationInfo(AOp: IPascalCoinOperation; Strings: TStrings);
+Var I: Integer;
+begin
+    Strings.AddPair('valid', bool_array[AOp.Valid]);
+    Strings.AddPair('errors', AOp.Errors);
+    Strings.AddPair('block', AOp.Block.ToString);
+    Strings.AddPair('time', AOp.Time.ToString);
+    Strings.AddPair('opblock', AOp.Opblock.ToString);
+    Strings.AddPair('maturation', AOp.Maturation.ToString);
+    Strings.AddPair('optype', AOp.Optype.ToString);
+    Strings.AddPair('OperationType', TRttiEnumerationType.GetName<TOperationType>(AOp.OperationType));
+    Strings.AddPair('optxt', AOp.Optxt);
+    Strings.AddPair('account', AOp.Account.ToString);
+    Strings.AddPair('amount', CurrToStr(AOp.Amount));
+    Strings.AddPair('fee', CurrToStr(AOp.Fee));
+    Strings.AddPair('balance', CurrToStr(AOp.Balance));
+    Strings.AddPair('sender_account', AOp.Sender_account.ToString);
+    Strings.AddPair('dest_account', AOp.Dest_account.ToString);
+    Strings.AddPair('enc_pubkey', AOp.Enc_PubKey);
+    Strings.AddPair('ophash', AOp.Ophash);
+    Strings.AddPair('old_ophash', AOp.Old_ophash);
+    Strings.AddPair('subtype', AOp.Subtype);
+    Strings.AddPair('signer_account', AOp.Signer_account.ToString);
+    Strings.AddPair('n_operation', AOp.N_Operation.ToString);
+    Strings.AddPair('payload', AOp.Payload);
+    Strings.AddPair('enc_pubkey', AOp.Enc_PubKey);
+
+    if AOp.SendersCount = 0 then
+       Strings.AddPair('Senders', '0')
+    else
+    begin
+      Strings.AddPair('SENDERS', AOp.SendersCount.ToString);
+      for I := 0 to AOp.SendersCount - 1 do
+      begin
+         Strings.AddPair('  ' + I.ToString + ': ' + 'account', AOp.sender[I].Account.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'n_operation', AOp.sender[I].N_Operation.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'amount', CurrToStr(AOp.sender[I].Amount));
+         Strings.AddPair('  ' + I.ToString + ': ' + 'amount_s', AOp.sender[I].Amount_s);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'payload', AOp.sender[I].Payload);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'payloadtype', AOp.sender[I].PayloadType.ToString);
+         Strings.Add('');
+      end;
+    end;
+
+    if AOp.ReceiversCount= 0 then
+       Strings.AddPair('Receivers', '0')
+    else
+    begin
+      Strings.AddPair('RECEIVERS', AOp.SendersCount.ToString);
+      for I := 0 to AOp.ReceiversCount - 1 do
+      begin
+         Strings.AddPair('  ' + I.ToString + ': ' + 'account', AOp.receiver[I].Account.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'amount', CurrToStr(AOp.receiver[I].Amount));
+         Strings.AddPair('  ' + I.ToString + ': ' + 'amount_s', AOp.receiver[I].Amount_s);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'payload', AOp.receiver[I].Payload);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'payloadtype', AOp.receiver[I].PayloadType.ToString);
+         Strings.Add('');
+      end;
+    end;
+
+    if AOp.ChangersCount = 0 then
+       Strings.AddPair('Changers', '0')
+    else
+    begin
+      Strings.AddPair('CHANGERS', AOp.ChangersCount.ToString);
+      for I := 0 to AOp.ChangersCount - 1 do
+      begin
+         Strings.AddPair('  ' + I.ToString + ': ' + 'account', AOp.changers[I].Account.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'n_operation', AOp.changers[I].N_Operation.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'new_enc_pubkey', AOp.changers[I].new_enc_pubkey);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'new_type', AOp.changers[I].new_type);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'seller_account', AOp.changers[I].seller_account.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'amount', CurrToStr(AOp.changers[I].account_price));
+         Strings.AddPair('  ' + I.ToString + ': ' + 'locker_until_block', AOp.changers[I].locked_until_block.ToString);
+         Strings.AddPair('  ' + I.ToString + ': ' + 'fee', CurrToStr(AOp.changers[I].fee));
+         Strings.Add('');
+      end;
+    end;
+
+end;
 
 end.

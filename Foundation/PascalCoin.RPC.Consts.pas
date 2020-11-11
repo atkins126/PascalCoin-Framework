@@ -25,6 +25,8 @@ const
   RPC_ERRNUM_INVALIDSIGNATURE = 1020;
   RPC_ERRNUM_NOTALLOWEDCALL = 1021;
 
+  RPC_MULTIPLE_ERRORS = 999999;
+
   DEEP_SEARCH = -1;
 
   PASCALCOIN_ENCODING = ['a' .. 'z', '0' .. '9', '!', '@', '#', '$', '%', '^',

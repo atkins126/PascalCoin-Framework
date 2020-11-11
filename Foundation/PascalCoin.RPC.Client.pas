@@ -1,190 +1,139 @@
-unit PascalCoin.RPC.Client;
+Unit PascalCoin.RPC.Client;
 
-interface
+Interface
 
-uses System.JSON, UC.Net.Interfaces, PascalCoin.RPC.Interfaces;
+Uses
+  System.JSON,
+  UC.Net.Interfaces,
+  PascalCoin.RPC.Interfaces;
 
-type
+Type
 
   TPascalCoinRPCClient = Class(TInterfacedObject, IPascalCoinRPCClient)
-  private
-    FNodeURI: string;
+  Private
+    FNodeURI: String;
 
     FHTTPClient: IucHTTPRequest;
     FResultStr: String;
     FResultObj: TJSONObject;
-    FError: boolean;
-    FErrorData: String;
-    FCallId: string;
+    FCallId: String;
     FNextId: Integer;
-    function NextId: String;
-  protected
-    function GetResult: TJSONObject;
-    function GetResultStr: string;
-    function RPCCall(const AMethod: String;
-      const AParams: Array of TParamPair): boolean;
-    function GetNodeURI: String;
-    procedure SetNodeURI(const Value: string);
+    Function NextId: String;
+  Protected
+    Function GetResponseObject: TJSONObject;
+    Function GetResponseStr: String;
+    Function RPCCall(Const AMethod: String; Const AParams: Array Of TParamPair): boolean;
+    Function GetNodeURI: String;
+    Procedure SetNodeURI(Const Value: String);
 
-  public
-    constructor Create(AHTTPClient: IucHTTPRequest);
+  Public
+    Constructor Create(AHTTPClient: IucHTTPRequest);
   End;
 
-implementation
+Implementation
 
-uses System.SysUtils, System.IOUtils;
+Uses
+  System.SysUtils,
+  System.IOUtils,
+  PascalCoin.RPC.Exceptions, PascalCoin.RPC.Consts;
 
 { TPascalCoinRPCClient }
 
-constructor TPascalCoinRPCClient.Create(AHTTPClient: IucHTTPRequest);
-begin
-  inherited Create;
+Constructor TPascalCoinRPCClient.Create(AHTTPClient: IucHTTPRequest);
+Begin
+  Inherited Create;
   FHTTPClient := AHTTPClient;
-  FError := True;
-end;
+End;
 
-function TPascalCoinRPCClient.GetNodeURI: String;
-begin
+Function TPascalCoinRPCClient.GetNodeURI: String;
+Begin
   result := FNodeURI;
-end;
+End;
 
-function TPascalCoinRPCClient.GetResult: TJSONObject;
-begin
-  if Not FError then
-    result := TJSONObject.ParseJSONValue(FResultStr) As TJSONObject
-  else
-    result := TJSONObject.ParseJSONValue(FErrorData) As TJSONObject;
-end;
+Function TPascalCoinRPCClient.GetResponseObject: TJSONObject;
+Begin
+  result := TJSONObject.ParseJSONValue(FResultStr) As TJSONObject
+End;
 
-function TPascalCoinRPCClient.GetResultStr: string;
-begin
-  if Not FError then
-    result := FResultStr
-  else
-    result := FErrorData;
-end;
+Function TPascalCoinRPCClient.GetResponseStr: String;
+Begin
+  result := FResultStr
+End;
 
-function TPascalCoinRPCClient.NextId: String;
-begin
+Function TPascalCoinRPCClient.NextId: String;
+Begin
   Inc(FNextId);
   result := FNextId.ToString;
-end;
+End;
 
 // {"jsonrpc": "2.0", "method": "XXX", "id": NNN, "params":{"p1":" ","p2":" "}}
-function TPascalCoinRPCClient.RPCCall(const AMethod: String;
-  const AParams: Array of TParamPair): boolean;
-var
-  lObj, lErrObj, lParams, lErr, lAObj: TJSONObject;
-  lArr: TJSONArray;
+Function TPascalCoinRPCClient.RPCCall(Const AMethod: String; Const AParams: Array Of TParamPair): boolean;
+Var
+  lObj, lErrObj, lParams: TJSONObject;
   lParam: TParamPair;
-  lValue, lElem, lErrElem: TJSONValue;
-  FAErrors: String;
-begin
+  lValue: TJSONValue;
+  lStatusCode: Integer;
+Begin
   FCallId := NextId;
   lObj := TJSONObject.Create;
-  try
+  Try
     lObj.AddPair('jsonrpc', '2.0');
     lObj.AddPair('id', FCallId);
     lObj.AddPair('method', AMethod);
 
     lParams := TJSONObject.Create;
-    for lParam in AParams do
-    begin
+    For lParam In AParams Do
+    Begin
       lParams.AddPair(lParam.Key, lParam.Value);
-    end;
+    End;
 
     lObj.AddPair('params', lParams);
 
     result := FHTTPClient.Post(FNodeURI, lObj.ToJSON);
-    FError := not result;
 
-    if FError then
-    begin
+    If Not result Then
+    Begin
       lObj.Free;
-      lObj := TJSONObject.Create;
-      lObj.AddPair('StatusCode', FHTTPClient.StatusCode.ToString);
-      lObj.AddPair('StatusMessage', FHTTPClient.StatusText);
-      lObj.AddPair('ErrorSource', 'HTTPClient');
-      FErrorData := lObj.ToJSON;
-      lObj.Free;
-    end
+      If FHTTPClient.StatusText.Contains('not allowed') Then
+        Raise ENotAllowedException.Create(RPC_ERRNUM_NOTALLOWEDCALL, FHTTPClient.ResponseStr) //FHTTPClient.StatusText)
+      Else
+        Raise EHTTPException.Create(FHTTPClient.StatusCode, FHTTPClient.StatusText);
+    End
     { TODO : Test that return Id matches call id }
-    else
-    begin
+    Else
+    Begin
       FResultStr := FHTTPClient.ResponseStr;
-      FResultObj := (TJSONObject.ParseJSONValue(FResultStr) as TJSONObject);
+      FResultObj := (TJSONObject.ParseJSONValue(FResultStr) As TJSONObject);
       lValue := FResultObj.FindValue('error');
 
+      If lValue <> Nil Then
+      Begin
 
-      if lValue <> nil then
-      begin
-        lErrObj := lValue as TJSONObject;
-        lErr := TJSONObject.Create;
-        lErr.AddPair('StatusCode', lErrObj.Values['code'].AsType<string>);
-        lErr.AddPair('StatusMessage', lErrObj.Values['message'].AsType<string>);
-        lErr.AddPair('ErrorSource', 'RemoteRPC');
-
-        FErrorData := lErr.ToJSON;
-        lErr.Free;
         FResultStr := '';
-        result := False;
-        FError := True;
-        Exit;
-      end;
 
-      lValue := FResultObj.FindValue('result');
-      if lValue is TJSONArray then
-      begin
-        FAErrors := '';
-        lArr := lValue as TJSONArray;
-        for lElem in lArr do
-        begin
-          lAObj := lElem as TJSONObject;
-          lErrElem := lAObj.FindValue('errors');
-          if lErrElem <> nil then
-          begin
-            FAErrors := FAErrors + lErrElem.AsType<String> + ';';
-          end;
-        end;
+        lErrObj := lValue As TJSONObject;
+        lStatusCode := lErrObj.Values['code'].AsType<Integer>;
 
-        if FAErrors <> '' then
-        begin
-          lErr := TJSONObject.Create;
-          lErr.AddPair('StatusCode', '-1');
-          lErr.AddPair('StatusMessage', FAErrors);
-          lErr.AddPair('ErrorSource', 'RemoteRPC');
+        Raise GetRPCExceptionClass(lStatusCode).Create(lStatusCode, lErrObj.Values['message'].AsType<String>);
 
-          FErrorData := lErr.ToJSON;
-          lErr.Free;
-          FResultStr := '';
-          Result := False;
-          FError := True;
-        end
-        else
-        begin
-          Result := True;
-          FError := False;
-        end;
+      End
+      Else
+      Begin
+        result := True;
+      End;
 
-      end
-      else if lValue is TJSONObject then
-      begin
-          Result := True;
-          FError := False;
-      end;
+    End;
 
-    end;
+  Finally
+    // if Assigned(lObj) then
+    // lObj.Free;
+  End;
+End;
 
-  finally
-//    if Assigned(lObj) then
-//       lObj.Free;
-  end;
-end;
-
-procedure TPascalCoinRPCClient.SetNodeURI(const Value: string);
-begin
+Procedure TPascalCoinRPCClient.SetNodeURI(Const Value: String);
+Begin
   FNodeURI := Value;
 
-end;
+End;
 
-end.
+End.

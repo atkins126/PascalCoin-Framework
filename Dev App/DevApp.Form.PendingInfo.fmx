@@ -1,0 +1,4 @@
+inherited PendingInfo: TPendingInfo
+  Caption = 'Pending Ops'
+  DesignerMasterStyle = 0
+end

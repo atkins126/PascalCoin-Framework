@@ -80,7 +80,7 @@ Begin
   URILabel.Text := FURI;
 
   try
-  lNode := GetAPI.NodeStatus;
+  lNode := NodeAPI.NodeStatus;
 
   Memo1.Lines.Add('ready: ' + lNode.ready_s);
   Memo1.Lines.Add('status: ' + lNode.status_s);
@@ -119,7 +119,7 @@ Begin
 
   Except
     on E: Exception do begin
-       HandleAPIException(E.Message);
+       HandleAPIException(E);
     end;
 
   end;

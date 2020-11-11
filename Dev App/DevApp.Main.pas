@@ -41,8 +41,10 @@ Type
     NodeButton: TSpeedButton;
     AddNodeButton: TSpeedButton;
     OpenFolderBtn: TSpeedButton;
+    BlockButton: TButton;
     Procedure AccountInfoBtnClick(Sender: TObject);
     Procedure AddNodeButtonClick(Sender: TObject);
+    procedure BlockButtonClick(Sender: TObject);
     Procedure FormCreate(Sender: TObject);
     Procedure NodeButtonClick(Sender: TObject);
     Procedure NodeListChange(Sender: TObject);
@@ -50,15 +52,15 @@ Type
     procedure OpenFolderBtnClick(Sender: TObject);
   Private
     { Private declarations }
-    FAPI: IPascalCoinAPI;
     FDisplayedClass: TClass;
-    Function GetAPI: IPascalCoinAPI;
+    Function GetExplorerAPI: IPascalCoinExplorerAPI;
+    Function GetNodeAPI: IPascalCoinNodeAPI;
     Function CloseDisplayedClass: Boolean;
     Procedure ShowNodeStatusForm;
     Procedure LoadConfig;
   Public
     { Public declarations }
-    Property API: IPascalCoinAPI Read GetAPI;
+    Property NodeAPI: IPascalCoinNodeAPI Read GetNodeAPI;
   End;
 
 Var
@@ -70,10 +72,12 @@ Implementation
 
 Uses
   System.JSON,
+  System.Generics.Collections,
   DevApp.Form.NodeStatus,
   DevApp.Base.DetailForm,
   DevApp.Form.AccountInfo,
-  FMX.DialogService, FMX.PlatformUtils;
+  DevApp.Form.BlockInfo,
+  FMX.DialogService, FMX.PlatformUtils, PascalCoin.RPC.Exceptions;
 
 Procedure TMainForm.AccountInfoBtnClick(Sender: TObject);
 Var
@@ -112,6 +116,21 @@ Begin
     End);
 End;
 
+procedure TMainForm.BlockButtonClick(Sender: TObject);
+Var
+  LFormInfo: TFormInfo<TBlockInfoForm>;
+Begin
+  If Not CloseDisplayedClass Then
+    Exit;
+  LFormInfo := FormStand1.GetFormInfo<TBlockInfoForm>(True, Layout1);
+  If Not LFormInfo.IsVisible Then
+    LFormInfo.Show;
+  LFormInfo.Form.DefaultURI := NodeList.Items[NodeList.ItemIndex];
+  FDisplayedClass := TBlockInfoForm;
+  LFormInfo.Form.InitialiseThis;
+
+end;
+
 Function TMainForm.CloseDisplayedClass: Boolean;
 Begin
   If Assigned(FDisplayedClass) Then
@@ -136,15 +155,19 @@ Begin
   LoadConfig;
 End;
 
-Function TMainForm.GetAPI: IPascalCoinAPI;
-Begin
-  Result := Config.Container.Resolve<IPascalCoinAPI>;
+function TMainForm.GetExplorerAPI: IPascalCoinExplorerAPI;
+begin
+
+end;
+
+function TMainForm.GetNodeAPI: IPascalCoinNodeAPI;
+begin
+  Result := Config.Container.Resolve<IPascalCoinNodeAPI>;
   Result.NodeURI := NodeList.Items[NodeList.ItemIndex];
-End;
+end;
 
 Procedure TMainForm.LoadConfig;
 Var
-  lServers: TJSONArray;
   S: String;
   I: Integer;
 Begin
@@ -168,10 +191,14 @@ Procedure TMainForm.NodeListChange(Sender: TObject);
 Var
   JO: TJSONObject;
 Begin
-  FAPI := Nil;
   Try
-    NodeStatusLabel.Text := API.NodeStatus.status_s;
+    NodeStatusLabel.Text := NodeAPI.NodeStatus.status_s;
   Except
+    on e: ENotAllowedException do
+    begin
+      NodeStatusLabel.Text := 'Not supported without Private Key';
+      Exit;
+    end;
     On e: exception Do
     Begin
       NodeStatusLabel.Text := 'Oops, a problem';
